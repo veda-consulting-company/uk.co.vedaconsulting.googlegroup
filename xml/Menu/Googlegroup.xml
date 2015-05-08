@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<menu>
+  <item>
+    <path>civicrm/googlegroup/settings</path>
+    <page_callback>CRM_Googlegroup_Form_Setting</page_callback>
+    <title>Googlegroup Settings</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/googlegroup/sync</path>
+    <page_callback>CRM_Googlegroup_Form_Sync</page_callback>
+    <title>Googlegroup Sync</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+</menu>
