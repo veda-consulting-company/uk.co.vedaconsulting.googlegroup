@@ -37,7 +37,7 @@ class CRM_Googlegroup_Form_Setting extends CRM_Core_Form {
     
     if (isset($_GET['code'])) {
       $client = CRM_Googlegroup_Utils::googleClient();
-      $redirectUrl    = CRM_Utils_System::url('civicrm/googlegroup/settings', 'reset=1',  TRUE, NULL, FALSE, TRUE);
+      $redirectUrl    = CRM_Utils_System::url('civicrm/googlegroup/settings', 'reset=1',  TRUE, NULL, FALSE, TRUE, TRUE);
       $client->setRedirectUri($redirectUrl);
       $client->authenticate($_GET['code']);
       CRM_Core_BAO_Setting::setItem($client->getRefreshToken(), self::GG_SETTING_GROUP, 'access_token' );
@@ -63,7 +63,7 @@ class CRM_Googlegroup_Form_Setting extends CRM_Core_Form {
    */
   public function postProcess() {
     $client = CRM_Googlegroup_Utils::googleClient();
-    $redirectUrl    = CRM_Utils_System::url('civicrm/googlegroup/settings', 'reset=1',  TRUE, NULL, FALSE, TRUE);
+    $redirectUrl    = CRM_Utils_System::url('civicrm/googlegroup/settings', 'reset=1',  TRUE, NULL, FALSE, TRUE, TRUE);
     $client->setRedirectUri($redirectUrl);
     $service = new Google_Service_Directory($client);
     $auth_url = $client->createAuthUrl();
