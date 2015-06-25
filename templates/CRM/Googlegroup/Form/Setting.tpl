@@ -14,6 +14,11 @@
           <td class="label">{$form.client_secret.label}</td>
           <td>{$form.client_secret.html}</td>
         </tr>
+         <tr class="crm-webinar-setting-api-key-domain">
+          <td class="label">{$form.domain_name.label}</td>
+          <td>{$form.domain_name.html}<br/>
+              <span class="description">{ts} Enter domain names separated by comma{/ts}</span></td>
+        </tr>
       </table>
     </div>
     <div class="crm-submit-buttons">

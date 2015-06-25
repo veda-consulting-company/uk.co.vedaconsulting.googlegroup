@@ -5,7 +5,6 @@ require_once 'google-api-php-client/src/Google/autoload.php';
 set_include_path(get_include_path() . PATH_SEPARATOR . 'google-api-php-client/src');
 define('GOOGLE_CLIENT_KEY', '');
 define('GOOGLE_SECERT_KEY', '');
-define('GROUP_DOMAIN', '');
 
 /**
  * Implements hook_civicrm_config().
@@ -37,6 +36,17 @@ function googlegroup_civicrm_install() {
   $customDataXMLFile  = $extensionDir  . '/xml/auto_install.xml';
   $import = new CRM_Utils_Migrate_Import( );
   $import->run( $customDataXMLFile );
+  
+  $params = array(
+    'sequential' => 1,
+    'name'          => 'Google Group Sync',
+    'description'   => 'Sync contacts between CiviCRM and Google Group',
+    'run_frequency' => 'Daily',
+    'api_entity'    => 'Googlegroup',
+    'api_action'    => 'sync',
+    'is_active'     => 0,
+  );
+  $result = civicrm_api3('job', 'create', $params);
   _googlegroup_civix_civicrm_install();
 }
 
@@ -46,6 +56,15 @@ function googlegroup_civicrm_install() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function googlegroup_civicrm_uninstall() {
+  CRM_Core_DAO::executeQuery("
+    DROP TABLE IF EXISTS civicrm_value_googlegroup_settings");
+   CRM_Core_DAO::executeQuery("
+    DELETE cf.* 
+    FROM civicrm_custom_field cf
+    INNER JOIN civicrm_custom_group cg on cf.custom_group_id = cg.id
+    where cg.name = 'Googlegroup_Settings'");
+  CRM_Core_DAO::executeQuery("
+    DELETE FROM civicrm_custom_group where name = 'Googlegroup_Settings'");
   _googlegroup_civix_civicrm_uninstall();
 }
 
@@ -158,19 +177,21 @@ function googlegroup_civicrm_buildForm($formName, &$form) {
     );
     
     $lists = civicrm_api('Googlegroup', 'getgroups', $params);
-    $form->add('select', 'google_group', ts('Google Group'), array('' => '- select -') + $lists['values'], FALSE );
-    $templatePath = realpath(dirname(__FILE__)."/templates/CRM/Group/Form");
-    CRM_Core_Region::instance('page-body')->add(array('template' => "{$templatePath}/Edit.extra.tpl"));
-        
-    $groupId = $form->getVar('_id');
-    if ($form->getAction() == CRM_Core_Action::UPDATE AND !empty($groupId)) {
-      $ggDetails  = CRM_Googlegroup_Utils::getGroupsToSync(array($groupId));
+    if (!empty($lists['values'])) {
+      $form->add('select', 'google_group', ts('Google Group'), array('' => '- select -') + $lists['values'], FALSE );
+      $templatePath = realpath(dirname(__FILE__)."/templates/CRM/Group/Form");
+      CRM_Core_Region::instance('page-body')->add(array('template' => "{$templatePath}/Edit.extra.tpl"));
 
-      if (!empty($ggDetails)) {
-        $defaults['google_group'] = $ggDetails[$groupId]['group_id'];
+      $groupId = $form->getVar('_id');
+      if ($form->getAction() == CRM_Core_Action::UPDATE AND !empty($groupId)) {
+        $ggDetails  = CRM_Googlegroup_Utils::getGroupsToSync(array($groupId));
+
+        if (!empty($ggDetails)) {
+          $defaults['google_group'] = $ggDetails[$groupId]['group_id'];
+        }
       }
+      $form->setDefaults($defaults);  
     }
-    $form->setDefaults($defaults);  
 
   }
 }
