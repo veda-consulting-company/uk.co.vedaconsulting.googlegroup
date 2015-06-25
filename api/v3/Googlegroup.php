@@ -26,17 +26,25 @@ function civicrm_api3_googlegroup_getgroups($params) {
     'access_token', NULL, FALSE
   );
   if ($accessToken) {
+    $results = array();
     $client->refreshToken($accessToken);
     $service = new Google_Service_Directory($client);
-    try {
-      $optParams = array('domain' => GROUP_DOMAIN);
-      $results = $service->groups->listGroups($optParams);
-    } 
-    catch (Exception $e) {
-      return array();
+    $domains = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, 'domain_name');
+    if (!empty($domains)) {
+      foreach ($domains as $domain) {
+        try {
+          $optParams = array('domain' => trim($domain));
+          $results[$domain] = $service->groups->listGroups($optParams);
+        } 
+        catch (Exception $e) {
+          return array();
+        }
+      }
     }
-    foreach($results->getGroups() as $result) {
-      $groups[$result['id']] = "{$result['name']}::{$result['email']}";
+    foreach ($results as $domain => $groupDetails) {
+      foreach($groupDetails->getGroups() as $result) {
+        $groups[$result['id']] = "{$domain}:{$result['name']}::{$result['email']}";
+      }
     }
   }
   return civicrm_api3_create_success($groups);
@@ -130,4 +138,20 @@ function civicrm_api3_googlegroup_subscribe($params) {
 
 function _civicrm_api3_googlegroup_subscribe_spec(&$params) {
   $params['group_id']['api.required'] = 1;
+}
+
+function civicrm_api3_googlegroup_sync($params) {
+  $result = array();
+	// Do push from CiviCRM to Google Group 
+  $runner = CRM_Googlegroup_Form_Sync::getRunner($skipEndUrl = TRUE);
+  if ($runner) {
+    $result = $runner->runAll();
+  }
+
+  if ($result['is_error'] == 0) {
+    return civicrm_api3_create_success();
+  }
+  else {
+    return civicrm_api3_create_error();
+  }
 }

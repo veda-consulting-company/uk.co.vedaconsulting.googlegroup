@@ -7,7 +7,7 @@ CiviCRM can be integrated with Google Group
 ### Installation ###
 
 * Install the extension manually in CiviCRM. More details [here](http://wiki.civicrm.org/confluence/display/CRMDOC/Extensions#Extensions-Installinganewextension) about installing extensions in CiviCRM.
-* Fill in GOOGLE_CLIENT_KEY, GOOGLE_SECERT_KEY and GROUP_DOMAIN in googlegroup.php
+* Fill in GOOGLE_CLIENT_KEY and GOOGLE_SECERT_KEY in googlegroup.php
 * Configure Google Group details in Mailings >> Googlegroup Settings(civicrm/googlegroup/settings?reset=1)
 
 ### Usage ###
