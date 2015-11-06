@@ -206,6 +206,12 @@ class CRM_Googlegroup_Form_Sync extends CRM_Core_Form {
       $stats[$groupID]['removed']++;
     }
     if (!$batch) {
+      // To avoid 'already member exists' error thrown, so remove contacts from alreay in Google, in civi temp table 
+       CRM_Core_DAO::executeQuery(
+      "DELETE FROM tmp_googlegroup_push_c
+       WHERE EXISTS (
+         SELECT email FROM tmp_googlegroup_push_m m WHERE m.email = tmp_googlegroup_push_c.email
+       );");
       // Nothing to do
       return CRM_Queue_Task::TASK_SUCCESS;
     }
@@ -217,6 +223,13 @@ class CRM_Googlegroup_Form_Sync extends CRM_Core_Form {
       "DELETE FROM tmp_googlegroup_push_m
        WHERE NOT EXISTS (
          SELECT email FROM tmp_googlegroup_push_c c WHERE c.email = tmp_googlegroup_push_m.email
+       );");
+    
+    // To avoid 'already member exists' error thrown, so remove contacts from alreay in Google, in civi temp table 
+    CRM_Core_DAO::executeQuery(
+      "DELETE FROM tmp_googlegroup_push_c
+       WHERE EXISTS (
+         SELECT email FROM tmp_googlegroup_push_m m WHERE m.email = tmp_googlegroup_push_c.email
        );");
     static::updatePushStats($stats);
     return CRM_Queue_Task::TASK_SUCCESS;

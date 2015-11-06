@@ -33,17 +33,19 @@ function civicrm_api3_googlegroup_getgroups($params) {
     if (!empty($domains)) {
       foreach ($domains as $domain) {
         try {
-          $optParams = array('domain' => trim($domain));
-          $results[$domain] = $service->groups->listGroups($optParams);
+	  $pageToken = "";
+	  do {
+	    $optParams = array('domain' => trim($domain), 'pageToken' => $pageToken);
+	    $results = $service->groups->listGroups($optParams);
+	    foreach($results->getGroups() as $result) {
+	      $groups[$result['id']] = "{$domain}:{$result['name']}::{$result['email']}";
+	    }
+	    $pageToken = $results->nextPageToken;
+	  } while($pageToken);
         } 
         catch (Exception $e) {
           return array();
         }
-      }
-    }
-    foreach ($results as $domain => $groupDetails) {
-      foreach($groupDetails->getGroups() as $result) {
-        $groups[$result['id']] = "{$domain}:{$result['name']}::{$result['email']}";
       }
     }
   }
@@ -61,15 +63,20 @@ function civicrm_api3_googlegroup_getmembers($params) {
     $client->refreshToken($accessToken);
     $service = new Google_Service_Directory($client);
     try {
-      $results = $service->members->listMembers($params['group_id']);
+      $pageToken = "";
+      do {
+	$optParams = array('pageToken' => $pageToken);
+	$results = $service->members->listMembers($params['group_id'], $optParams);
+	foreach($results->getMembers() as $result) {
+	  $members[$result['id']] = $result['email'];
+	}
+	$pageToken = $results->nextPageToken;
+      } while($pageToken);
     } 
     catch (Exception $e) {
       return array();
     }
     
-    foreach($results->getMembers() as $result) {
-      $members[$result['id']] = $result['email'];
-    }
   }
   return civicrm_api3_create_success($members);
 }
