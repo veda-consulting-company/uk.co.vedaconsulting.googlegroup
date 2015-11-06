@@ -206,12 +206,6 @@ class CRM_Googlegroup_Form_Sync extends CRM_Core_Form {
       $stats[$groupID]['removed']++;
     }
     if (!$batch) {
-      // To avoid 'already member exists' error thrown, so remove contacts from alreay in Google, in civi temp table 
-       CRM_Core_DAO::executeQuery(
-      "DELETE FROM tmp_googlegroup_push_c
-       WHERE EXISTS (
-         SELECT email FROM tmp_googlegroup_push_m m WHERE m.email = tmp_googlegroup_push_c.email
-       );");
       // Nothing to do
       return CRM_Queue_Task::TASK_SUCCESS;
     }
@@ -225,12 +219,6 @@ class CRM_Googlegroup_Form_Sync extends CRM_Core_Form {
          SELECT email FROM tmp_googlegroup_push_c c WHERE c.email = tmp_googlegroup_push_m.email
        );");
     
-    // To avoid 'already member exists' error thrown, so remove contacts from alreay in Google, in civi temp table 
-    CRM_Core_DAO::executeQuery(
-      "DELETE FROM tmp_googlegroup_push_c
-       WHERE EXISTS (
-         SELECT email FROM tmp_googlegroup_push_m m WHERE m.email = tmp_googlegroup_push_c.email
-       );");
     static::updatePushStats($stats);
     return CRM_Queue_Task::TASK_SUCCESS;
   }
@@ -241,6 +229,13 @@ class CRM_Googlegroup_Form_Sync extends CRM_Core_Form {
    * This also does the clean-up tasks of removing the temporary tables.
    */
   static function syncPushAdd(CRM_Queue_TaskContext $ctx, $groupID) {
+    
+    // To avoid 'already member exists' error thrown, so remove contacts alreay in Google from civi temp table 
+    CRM_Core_DAO::executeQuery(
+      "DELETE FROM tmp_googlegroup_push_c
+       WHERE EXISTS (
+         SELECT email FROM tmp_googlegroup_push_m m WHERE m.email = tmp_googlegroup_push_c.email
+       );");
 
     $dao = CRM_Core_DAO::executeQuery( "SELECT * FROM tmp_googlegroup_push_c;");
     // Loop the $dao object to make a list of emails to subscribe/update
