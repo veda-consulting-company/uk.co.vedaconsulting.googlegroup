@@ -5,7 +5,7 @@
 CiviCRM can be integrated with Google Group
 
 ### Prerequisites ###
-1. Have some test groups in https://admin.google.com for your domain screenshot 
+1. Have some test groups in https://admin.google.com for your domain
 ![Screenshot of googlegroup groups](images/Groups_page_hidden.png)
 2. Have your Admin SDK api enabled in https://console.developers.google.com 
 ![Screenshot of googlegroup admin sdk](images/5.png)
