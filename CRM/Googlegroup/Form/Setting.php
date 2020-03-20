@@ -59,13 +59,21 @@ class CRM_Googlegroup_Form_Setting extends CRM_Core_Form {
 
    public function setDefaultValues() {
     $defaults = $details = array();
-    if(GOOGLE_CLIENT_KEY && GOOGLE_SECERT_KEY) {
+    //MV#3747 fix warning message if client key and secret key is not exists
+    if(!empty(GOOGLE_CLIENT_KEY) && !empty(GOOGLE_SECERT_KEY)) {
       $defaults['client_key']    = GOOGLE_CLIENT_KEY;
       $defaults['client_secret'] = GOOGLE_SECERT_KEY;
     }
-    $domains = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, 'domain_name');
-    $defaults['domain_name'] = implode(',', $domains);
-
+    //MV#3747 set default client key and client secret key from setting table
+    foreach (array('client_key', 'client_secret', 'domain_name') as $fieldName) {
+      $fielValue = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, $fieldName);
+      if (!empty($fielValue)) {
+        if ($fieldName == 'domain_name') {
+          $fielValue = implode(',', $fielValue);
+        }
+        $defaults[$fieldName] = $fielValue;
+      }
+    }
     return $defaults;
   }
 
@@ -79,10 +87,19 @@ class CRM_Googlegroup_Form_Setting extends CRM_Core_Form {
   public function postProcess() {
     $params = $this->controller->exportValues($this->_name); 
     $domains = array();
-    $domains = explode(',', trim($params['domain_name']));
-    CRM_Core_BAO_Setting::setItem($domains,
-        self::GG_SETTING_GROUP, 'domain_name'
+    //MV#3747 seems only domain name was saved into settings table, save client key and secret key into settings table as well.
+    //If GOOGLE_CLIENT_KEY and GOOGLE_SECERT_KEY not set in googlegroup.php then use client key and client secret from configuration settings
+    foreach (array('client_key', 'client_secret', 'domain_name') as $fieldName) {
+      if ($fieldName == 'domain_name') {
+        $fielValue = explode(',', trim($params[$fieldName]));
+      }
+      else{
+        $fielValue = trim($params[$fieldName]);
+      }
+      CRM_Core_BAO_Setting::setItem($fielValue,
+        self::GG_SETTING_GROUP, $fieldName
       );
+    }
      $accessToken = CRM_Core_BAO_Setting::getItem(self::GG_SETTING_GROUP,
        'access_token', NULL, FALSE
     );

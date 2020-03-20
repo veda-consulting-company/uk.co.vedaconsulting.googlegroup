@@ -4,8 +4,17 @@ class CRM_Googlegroup_Utils {
 
   static function googleClient() {
     $client = new Google_Client();
-    $client->setClientId(GOOGLE_CLIENT_KEY);
-    $client->setClientSecret(GOOGLE_SECERT_KEY);
+    //MV#3747 GOOGLE_CLIENT_KEY and GOOGLE_SECERT_KEY not set in googlegroup.php then use client key and client secret from configuration settings
+    $clientKey = GOOGLE_CLIENT_KEY;
+    $clientSecret = GOOGLE_SECERT_KEY;
+    if (empty($clientKey)) {
+      $clientKey = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, 'client_key');
+    }
+    if (empty($clientSecret)) {
+      $clientSecret = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, 'client_secret');
+    }    
+    $client->setClientId($clientKey);
+    $client->setClientSecret($clientSecret);
     $client->setAccessType('offline');
     $client->addScope(Google_Service_Directory::ADMIN_DIRECTORY_GROUP);
     return $client;
