@@ -251,7 +251,7 @@ class CRM_Googlegroup_Form_Sync extends CRM_Core_Form {
     $results = civicrm_api('Googlegroup', 'subscribe', array('version' => 3, 'group_id' => $groupID, 'emails' => $batch, 'role' => 'MEMBER'));
     
     // Log the batch subscribe details
-    CRM_Core_Error::debug_var( 'Google Group batchSubscribe $batch= ', $batch);
+    CRM_Core_Error::debug_var( 'Google Group batchSubscribe $batch= ', $batch, true, true, "googlegroup");
     
     static::updatePushStats($stats);
     // Finally, finish up by removing the two temporary tables
