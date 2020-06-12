@@ -210,7 +210,7 @@ class CRM_Googlegroup_Form_Sync extends CRM_Core_Form {
       return CRM_Queue_Task::TASK_SUCCESS;
     }
     // Log the batch unsubscribe details
-    CRM_Core_Error::debug_var( 'Google Group batchUnsubscribe $batch= ', $batch);
+    CRM_Core_Error::debug_var( 'Google Group batchUnsubscribe $batch= ', $batch, true, true, "googlegroup");
     $results = civicrm_api('Googlegroup', 'deletemember', array('version' => 3, 'group_id' => $groupID, 'member' => $batch));
     // Finally we can delete the emails that we just processed from the mailchimp temp table.
     CRM_Core_DAO::executeQuery(
