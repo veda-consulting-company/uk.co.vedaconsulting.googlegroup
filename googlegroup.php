@@ -209,8 +209,9 @@ function googlegroup_civicrm_validateForm( $formName, &$fields, &$files, &$form,
     }
     if (!empty($otherGroups)) {
       $otherGroup = reset($otherGroups);
-      $errors['google_group'] = ts('There is already a CiviCRM group tracking this Group, called "'
-        . $otherGroup['civigroup_title'].'"');
+      $errors['google_group'] = ts('There is already a CiviCRM group tracking this Group, called "%1".', [
+        1 => $otherGroup['civigroup_title'],
+      ]);
     }
   }
 }
