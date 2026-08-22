@@ -24,9 +24,7 @@ class CRM_Googlegroup_Form_Setting extends CRM_Core_Form {
     ));  
     
 
-    $accessToken = CRM_Core_BAO_Setting::getItem(self::GG_SETTING_GROUP,
-       'access_token', NULL, FALSE
-    );
+    $accessToken = Civi::settings()->get('access_token') ?: FALSE;
     
     if (empty($accessToken)) {
       $buttons = array(
@@ -66,7 +64,7 @@ class CRM_Googlegroup_Form_Setting extends CRM_Core_Form {
     }
     //MV#3747 set default client key and client secret key from setting table
     foreach (array('client_key', 'client_secret', 'domain_name') as $fieldName) {
-      $fielValue = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, $fieldName);
+      $fielValue = Civi::settings()->get($fieldName);
       if (!empty($fielValue)) {
         if ($fieldName == 'domain_name') {
           $fielValue = implode(',', $fielValue);
@@ -100,9 +98,7 @@ class CRM_Googlegroup_Form_Setting extends CRM_Core_Form {
         self::GG_SETTING_GROUP, $fieldName
       );
     }
-     $accessToken = CRM_Core_BAO_Setting::getItem(self::GG_SETTING_GROUP,
-       'access_token', NULL, FALSE
-    );
+     $accessToken = Civi::settings()->get('access_token') ?: FALSE;
     
     if (empty($accessToken)) {
       $client = CRM_Googlegroup_Utils::googleClient();

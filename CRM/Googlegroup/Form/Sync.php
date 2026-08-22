@@ -20,7 +20,7 @@ class CRM_Googlegroup_Form_Sync extends CRM_Core_Form {
   function preProcess() {
     $state = CRM_Utils_Request::retrieve('state', 'String', CRM_Core_DAO::$_nullObject, FALSE, 'tmp', 'GET');
     if ($state == 'done') {
-      $stats = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, 'push_stats');
+      $stats = Civi::settings()->get('push_stats');
       $groups = CRM_Googlegroup_Utils::getGroupsToSync(array(), null);
       if (!$groups) {
         return;
@@ -347,7 +347,7 @@ class CRM_Googlegroup_Form_Sync extends CRM_Core_Form {
    * Update the push stats setting.
    */
   static function updatePushStats($updates) {
-    $stats = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, 'push_stats');
+    $stats = Civi::settings()->get('push_stats');
     foreach ($updates as $groupId=>$settings) {
       foreach ($settings as $key=>$val) {
         $stats[$groupId][$key] = $val;
