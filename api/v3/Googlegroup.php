@@ -22,14 +22,12 @@ function civicrm_api3_googlegroup_getgroups($params) {
   $groups = array();
   $client = CRM_Googlegroup_Utils::googleClient();
   
-  $accessToken = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP,
-    'access_token', NULL, FALSE
-  );
+  $accessToken = Civi::settings()->get('access_token') ?: FALSE;
   if ($accessToken) {
     $results = array();
     $client->refreshToken($accessToken);
     $service = new Google_Service_Directory($client);
-    $domains = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, 'domain_name');
+    $domains = Civi::settings()->get('domain_name');
     if (!empty($domains)) {
       foreach ($domains as $domain) {
         try {
@@ -56,9 +54,7 @@ function civicrm_api3_googlegroup_getmembers($params) {
   $members = array();
   $client = CRM_Googlegroup_Utils::googleClient();
   
-  $accessToken = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP,
-    'access_token', NULL, FALSE
-  );
+  $accessToken = Civi::settings()->get('access_token') ?: FALSE;
   if ($accessToken) {
     $client->refreshToken($accessToken);
     $service = new Google_Service_Directory($client);
@@ -89,9 +85,7 @@ function civicrm_api3_googlegroup_deletemember($params) {
   $members = array();
   $client = CRM_Googlegroup_Utils::googleClient();
   
-  $accessToken = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP,
-    'access_token', NULL, FALSE
-  );
+  $accessToken = Civi::settings()->get('access_token') ?: FALSE;
   if ($accessToken) {
     $client->refreshToken($accessToken);
     $client->setUseBatch(TRUE);
@@ -116,9 +110,7 @@ function _civicrm_api3_googlegroup_deletemember_spec(&$params) {
 
 function civicrm_api3_googlegroup_subscribe($params) {
   $results = array();
-  $accessToken = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP,
-    'access_token', NULL, FALSE
-  );
+  $accessToken = Civi::settings()->get('access_token') ?: FALSE;
   if ($accessToken) {
     $client = CRM_Googlegroup_Utils::googleClient();
     $client->refreshToken($accessToken);

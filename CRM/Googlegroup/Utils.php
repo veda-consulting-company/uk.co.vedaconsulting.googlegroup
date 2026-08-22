@@ -8,10 +8,10 @@ class CRM_Googlegroup_Utils {
     $clientKey = GOOGLE_CLIENT_KEY;
     $clientSecret = GOOGLE_SECERT_KEY;
     if (empty($clientKey)) {
-      $clientKey = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, 'client_key');
+      $clientKey = Civi::settings()->get('client_key');
     }
     if (empty($clientSecret)) {
-      $clientSecret = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, 'client_secret');
+      $clientSecret = Civi::settings()->get('client_secret');
     }    
     $client->setClientId($clientKey);
     $client->setClientSecret($clientSecret);
