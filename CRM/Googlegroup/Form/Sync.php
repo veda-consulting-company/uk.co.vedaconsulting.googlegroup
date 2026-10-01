@@ -18,7 +18,7 @@ class CRM_Googlegroup_Form_Sync extends CRM_Core_Form {
    * @access public
    */
   function preProcess() {
-    $state = CRM_Utils_Request::retrieve('state', 'String', CRM_Core_DAO::$_nullObject, FALSE, 'tmp', 'GET');
+    $state = CRM_Utils_Request::retrieve('state', 'String', NULL, FALSE, 'tmp', 'GET');
     if ($state == 'done') {
       $stats = CRM_Core_BAO_Setting::getItem(CRM_Googlegroup_Form_Setting::GG_SETTING_GROUP, 'push_stats');
       $groups = CRM_Googlegroup_Utils::getGroupsToSync(array(), null);
